@@ -4,143 +4,76 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { mockDailyPlan, mockProgress, mockUser } from '@/lib/mockData'
 
-interface DailyPlan {
-  date: string
-  lesson: {
-    id: number
-    title: string
-    phase: number
-    day: number
-    difficulty: string
-    reading_time_min: number
-  }
-  completed: boolean
-  quiz_completed: boolean
-}
-
-interface ProgressSummary {
-  user: {
-    username: string
-    created_at: string
-  }
-  overall: {
-    total_lessons: number
-    completed_lessons: number
-    completion_percentage: number
-    current_streak: number
-    longest_streak: number
-    total_time_spent_minutes: number
-  }
-  domains: Array<{
-    domain: string
-    score: number
-    lessons_count: number
-  }>
-}
-
 export default function HomePage() {
-  const [dailyPlan, setDailyPlan] = useState<DailyPlan | null>(null)
-  const [progress, setProgress] = useState<ProgressSummary | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [userId, setUserId] = useState<string | null>(null)
-  const [showWelcome, setShowWelcome] = useState(true)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    // Simulate loading with animation
-    const timer = setTimeout(() => {
-      setUserId(mockUser.id)
-      setDailyPlan(mockDailyPlan)
-      setProgress(mockProgress as any)
-      setLoading(false)
-      
-      // Hide welcome after 3 seconds
-      setTimeout(() => setShowWelcome(false), 3000)
-    }, 2000)
-
-    return () => clearTimeout(timer)
+    setMounted(true)
   }, [])
 
-  if (loading || showWelcome) {
+  // Show simple loading during SSR
+  if (!mounted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-dark-bg via-dark-surface to-dark-bg overflow-hidden relative">
-        {/* Animated background particles */}
-        <div className="absolute inset-0">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-2 h-2 bg-primary rounded-full opacity-20"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
-                animationDelay: `${Math.random() * 2}s`
-              }}
-            />
-          ))}
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0a0a0f] via-[#141419] to-[#0a0a0f]">
+        <div className="text-center px-4">
+          <div className="text-7xl mb-6 animate-pulse">🛡️</div>
+          <h1 className="text-3xl font-bold mb-3" style={{
+            background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            SecArch Academy
+          </h1>
+          <p className="text-gray-400">Loading...</p>
         </div>
-
-        <div className="text-center z-10 px-4">
-          {loading ? (
-            <>
-              {/* Loading spinner */}
-              <div className="relative mb-8">
-                <div className="w-24 h-24 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-5xl animate-pulse">🛡️</div>
-                </div>
-              </div>
-              <h1 className="text-2xl font-bold gradient-text mb-3 animate-fade-in">
-                Initializing Your Security Journey
-              </h1>
-              <p className="text-gray-400 animate-fade-in" style={{animationDelay: '0.5s'}}>
-                Preparing your personalized learning path...
-              </p>
-            </>
-          ) : (
-            <>
-              {/* Welcome animation */}
-              <div className="animate-slide-up">
-                <div className="text-7xl mb-6 animate-bounce-slow">🎯</div>
-                <h1 className="text-4xl font-bold mb-4">
-                  <span className="gradient-text">Welcome, Security Architect!</span>
-                </h1>
-                <p className="text-xl text-gray-300 mb-2">Your journey from beginner to expert starts now</p>
-                <p className="text-gray-400 text-sm">Loading your dashboard...</p>
-              </div>
-            </>
-          )}
-        </div>
-
-        <style jsx>{`
-          @keyframes float {
-            0%, 100% { transform: translateY(0px) translateX(0px); }
-            25% { transform: translateY(-20px) translateX(10px); }
-            50% { transform: translateY(-10px) translateX(-10px); }
-            75% { transform: translateY(-15px) translateX(5px); }
-          }
-        `}</style>
       </div>
     )
   }
 
+  const dailyPlan = mockDailyPlan
+  const progress = mockProgress as any
+
   return (
-    <div className="min-h-screen pb-20">
+    <div className="min-h-screen pb-20" style={{ backgroundColor: '#0a0a0f' }}>
       {/* Header */}
-      <header className="sticky top-0 z-50 glass border-b border-dark-border">
+      <header style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+        background: 'rgba(255, 255, 255, 0.05)',
+        backdropFilter: 'blur(10px)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+      }}>
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold gradient-text">SecArch Academy</h1>
+              <h1 className="text-xl font-bold" style={{
+                background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}>
+                SecArch Academy
+              </h1>
               <p className="text-xs text-gray-400 mt-1">Security Architect Training</p>
             </div>
             <Link 
               href="/dashboard"
-              className="flex items-center gap-2 bg-dark-elevated px-4 py-2 rounded-lg border border-dark-border hover:border-primary transition-colors"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                backgroundColor: '#1c1c24',
+                padding: '0.5rem 1rem',
+                borderRadius: '0.5rem',
+                border: '1px solid #2a2a35'
+              }}
             >
-              <span className="text-2xl">🎯</span>
-              <div className="text-left">
+              <span className="text-2xl">🔥</span>
+              <div style={{ textAlign: 'left' }}>
                 <p className="text-xs text-gray-400">Streak</p>
-                <p className="text-sm font-bold text-primary">{progress?.overall.current_streak || 0} days</p>
+                <p className="text-sm font-bold" style={{ color: '#6366f1' }}>{progress.overall.current_streak} days</p>
               </div>
             </Link>
           </div>
@@ -149,8 +82,8 @@ export default function HomePage() {
 
       <main className="max-w-7xl mx-auto px-4 py-6">
         {/* Welcome Section */}
-        <div className="mb-6 animate-fade-in">
-          <h2 className="text-2xl font-bold mb-2">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold mb-2 text-white">
             Welcome back! 👋
           </h2>
           <p className="text-gray-400">
@@ -159,118 +92,159 @@ export default function HomePage() {
         </div>
 
         {/* Progress Overview */}
-        {progress && (
-          <div className="grid grid-cols-2 gap-4 mb-6 animate-slide-up">
-            <div className="bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/30 rounded-2xl p-4">
-              <div className="text-3xl mb-2">📚</div>
-              <p className="text-2xl font-bold">{progress.overall.completed_lessons}</p>
-              <p className="text-sm text-gray-400">Lessons Done</p>
-            </div>
-            <div className="bg-gradient-to-br from-secondary/20 to-secondary/5 border border-secondary/30 rounded-2xl p-4">
-              <div className="text-3xl mb-2">⏱️</div>
-              <p className="text-2xl font-bold">{Math.round(progress.overall.total_time_spent_minutes / 60)}h</p>
-              <p className="text-sm text-gray-400">Time Invested</p>
-            </div>
-            <div className="bg-gradient-to-br from-accent/20 to-accent/5 border border-accent/30 rounded-2xl p-4">
-              <div className="text-3xl mb-2">🔥</div>
-              <p className="text-2xl font-bold">{progress.overall.current_streak}</p>
-              <p className="text-sm text-gray-400">Day Streak</p>
-            </div>
-            <div className="bg-gradient-to-br from-success/20 to-success/5 border border-success/30 rounded-2xl p-4">
-              <div className="text-3xl mb-2">📈</div>
-              <p className="text-2xl font-bold">{progress.overall.completion_percentage}%</p>
-              <p className="text-sm text-gray-400">Complete</p>
-            </div>
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.05) 100%)',
+            border: '1px solid rgba(99, 102, 241, 0.3)',
+            borderRadius: '1rem',
+            padding: '1rem'
+          }}>
+            <div className="text-3xl mb-2">📚</div>
+            <p className="text-2xl font-bold text-white">{progress.overall.completed_lessons}</p>
+            <p className="text-sm text-gray-400">Lessons Done</p>
           </div>
-        )}
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(139, 92, 246, 0.05) 100%)',
+            border: '1px solid rgba(139, 92, 246, 0.3)',
+            borderRadius: '1rem',
+            padding: '1rem'
+          }}>
+            <div className="text-3xl mb-2">⏱️</div>
+            <p className="text-2xl font-bold text-white">{Math.round(progress.overall.total_time_spent_minutes / 60)}h</p>
+            <p className="text-sm text-gray-400">Time Invested</p>
+          </div>
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.2) 0%, rgba(236, 72, 153, 0.05) 100%)',
+            border: '1px solid rgba(236, 72, 153, 0.3)',
+            borderRadius: '1rem',
+            padding: '1rem'
+          }}>
+            <div className="text-3xl mb-2">🔥</div>
+            <p className="text-2xl font-bold text-white">{progress.overall.current_streak}</p>
+            <p className="text-sm text-gray-400">Day Streak</p>
+          </div>
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.05) 100%)',
+            border: '1px solid rgba(16, 185, 129, 0.3)',
+            borderRadius: '1rem',
+            padding: '1rem'
+          }}>
+            <div className="text-3xl mb-2">📈</div>
+            <p className="text-2xl font-bold text-white">{progress.overall.completion_percentage}%</p>
+            <p className="text-sm text-gray-400">Complete</p>
+          </div>
+        </div>
 
         {/* Today's Lesson */}
-        {dailyPlan && (
-          <div className="mb-6 animate-slide-up" style={{animationDelay: '0.1s'}}>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-lg font-bold">Today's Challenge</h3>
-              <span className="text-xs px-3 py-1 bg-primary/20 text-primary rounded-full border border-primary/30">
-                Day {dailyPlan.lesson.day}
-              </span>
-            </div>
-            
-            <Link href={`/lesson/${dailyPlan.lesson.id}`}>
-              <div className="bg-gradient-to-br from-dark-elevated to-dark-surface border border-dark-border rounded-2xl p-6 card-hover">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
-                    {dailyPlan.lesson.phase === 0 ? '🌐' : 
-                     dailyPlan.lesson.phase === 1 ? '🔒' :
-                     dailyPlan.lesson.phase === 2 ? '⚡' :
-                     dailyPlan.lesson.phase === 3 ? '🛡️' : '🚨'}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-lg font-bold text-white">Today's Challenge</h3>
+            <span className="text-xs px-3 py-1" style={{
+              backgroundColor: 'rgba(99, 102, 241, 0.2)',
+              color: '#6366f1',
+              borderRadius: '9999px',
+              border: '1px solid rgba(99, 102, 241, 0.3)'
+            }}>
+              Day {dailyPlan.lesson.day}
+            </span>
+          </div>
+          
+          <Link href={`/lesson/${dailyPlan.lesson.id}`}>
+            <div style={{
+              background: 'linear-gradient(135deg, #1c1c24 0%, #141419 100%)',
+              border: '1px solid #2a2a35',
+              borderRadius: '1rem',
+              padding: '1.5rem',
+              transition: 'all 0.3s ease',
+              cursor: 'pointer'
+            }}>
+              <div className="flex items-start gap-4">
+                <div style={{
+                  width: '3rem',
+                  height: '3rem',
+                  background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                  borderRadius: '0.75rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '1.5rem',
+                  flexShrink: 0
+                }}>
+                  🌐
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xs px-2 py-1" style={{
+                      backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                      color: '#6366f1',
+                      borderRadius: '0.375rem',
+                      border: '1px solid rgba(99, 102, 241, 0.2)'
+                    }}>
+                      Phase {dailyPlan.lesson.phase}
+                    </span>
+                    <span className="text-xs px-2 py-1" style={{
+                      backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                      color: '#10b981',
+                      borderRadius: '0.375rem',
+                      border: '1px solid rgba(16, 185, 129, 0.2)'
+                    }}>
+                      {dailyPlan.lesson.difficulty}
+                    </span>
+                    <span className="text-xs text-gray-400">
+                      📖 {dailyPlan.lesson.reading_time_min} min
+                    </span>
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-md border border-primary/20">
-                        Phase {dailyPlan.lesson.phase}
-                      </span>
-                      <span className={`text-xs px-2 py-1 rounded-md border ${
-                        dailyPlan.lesson.difficulty === 'beginner' ? 'bg-success/10 text-success border-success/20' :
-                        dailyPlan.lesson.difficulty === 'intermediate' ? 'bg-warning/10 text-warning border-warning/20' :
-                        'bg-danger/10 text-danger border-danger/20'
-                      }`}>
-                        {dailyPlan.lesson.difficulty}
-                      </span>
-                      <span className="text-xs text-gray-400">
-                        📖 {dailyPlan.lesson.reading_time_min} min
-                      </span>
-                    </div>
-                    <h4 className="font-bold text-lg mb-1">{dailyPlan.lesson.title}</h4>
-                    <p className="text-sm text-gray-400 mb-4">
-                      Tap to start your lesson and unlock the quiz
-                    </p>
-                    
-                    <button className="w-full bg-gradient-to-r from-primary to-secondary text-white font-bold py-3 rounded-xl btn-glow">
-                      Start Learning →
-                    </button>
-                  </div>
+                  <h4 className="font-bold text-lg mb-1 text-white">{dailyPlan.lesson.title}</h4>
+                  <p className="text-sm text-gray-400 mb-4">
+                    Tap to start your lesson and unlock the quiz
+                  </p>
+                  
+                  <button style={{
+                    width: '100%',
+                    background: 'linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%)',
+                    color: 'white',
+                    fontWeight: 'bold',
+                    padding: '0.75rem',
+                    borderRadius: '0.75rem',
+                    border: 'none',
+                    cursor: 'pointer',
+                    boxShadow: '0 0 20px rgba(99, 102, 241, 0.5)'
+                  }}>
+                    Start Learning →
+                  </button>
                 </div>
               </div>
-            </Link>
-          </div>
-        )}
-
-        {/* Domain Progress */}
-        {progress && progress.domains.length > 0 && (
-          <div className="mb-6 animate-slide-up" style={{animationDelay: '0.2s'}}>
-            <h3 className="text-lg font-bold mb-3">Your Expertise</h3>
-            <div className="space-y-3">
-              {progress.domains.map((domain) => (
-                <div key={domain.domain} className="bg-dark-elevated border border-dark-border rounded-xl p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium">{domain.domain}</span>
-                    <span className="text-sm font-bold text-primary">{domain.score}%</span>
-                  </div>
-                  <div className="h-2 bg-dark-surface rounded-full overflow-hidden">
-                    <div 
-                      className="h-full progress-bar rounded-full"
-                      style={{width: `${domain.score}%`}}
-                    />
-                  </div>
-                  <p className="text-xs text-gray-400 mt-1">{domain.lessons_count} lessons</p>
-                </div>
-              ))}
             </div>
-          </div>
-        )}
+          </Link>
+        </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 gap-4 mb-6 animate-slide-up" style={{animationDelay: '0.3s'}}>
+        <div className="grid grid-cols-2 gap-4 mb-6">
           <Link href="/learn">
-            <div className="bg-dark-elevated border border-dark-border rounded-xl p-4 text-center card-hover">
+            <div style={{
+              backgroundColor: '#1c1c24',
+              border: '1px solid #2a2a35',
+              borderRadius: '0.75rem',
+              padding: '1rem',
+              textAlign: 'center',
+              cursor: 'pointer'
+            }}>
               <div className="text-3xl mb-2">📚</div>
-              <p className="font-bold">All Lessons</p>
+              <p className="font-bold text-white">All Lessons</p>
               <p className="text-xs text-gray-400 mt-1">Browse curriculum</p>
             </div>
           </Link>
           <Link href="/incidents">
-            <div className="bg-dark-elevated border border-dark-border rounded-xl p-4 text-center card-hover">
+            <div style={{
+              backgroundColor: '#1c1c24',
+              border: '1px solid #2a2a35',
+              borderRadius: '0.75rem',
+              padding: '1rem',
+              textAlign: 'center',
+              cursor: 'pointer'
+            }}>
               <div className="text-3xl mb-2">🚨</div>
-              <p className="font-bold">Incidents</p>
+              <p className="font-bold text-white">Incidents</p>
               <p className="text-xs text-gray-400 mt-1">Practice responses</p>
             </div>
           </Link>
@@ -278,22 +252,58 @@ export default function HomePage() {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 glass border-t border-dark-border">
+      <nav style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        background: 'rgba(255, 255, 255, 0.05)',
+        backdropFilter: 'blur(10px)',
+        borderTop: '1px solid rgba(255, 255, 255, 0.1)'
+      }}>
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-4 gap-2 py-3">
-            <Link href="/" className="flex flex-col items-center gap-1 text-primary">
+            <Link href="/" style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '0.25rem',
+              color: '#6366f1',
+              textDecoration: 'none'
+            }}>
               <span className="text-2xl">🏠</span>
               <span className="text-xs font-medium">Home</span>
             </Link>
-            <Link href="/learn" className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition-colors">
+            <Link href="/learn" style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '0.25rem',
+              color: '#9ca3af',
+              textDecoration: 'none'
+            }}>
               <span className="text-2xl">📚</span>
               <span className="text-xs">Learn</span>
             </Link>
-            <Link href="/incidents" className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition-colors">
+            <Link href="/incidents" style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '0.25rem',
+              color: '#9ca3af',
+              textDecoration: 'none'
+            }}>
               <span className="text-2xl">🚨</span>
               <span className="text-xs">Incidents</span>
             </Link>
-            <Link href="/dashboard" className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition-colors">
+            <Link href="/dashboard" style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '0.25rem',
+              color: '#9ca3af',
+              textDecoration: 'none'
+            }}>
               <span className="text-2xl">📊</span>
               <span className="text-xs">Progress</span>
             </Link>

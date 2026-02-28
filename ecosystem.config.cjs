@@ -2,12 +2,12 @@ module.exports = {
   apps: [
     {
       name: 'webapp-ui',
-      cwd: '/home/user/webapp/.next/standalone',
-      script: 'server.js',
+      script: 'npx',
+      args: 'next start -p 3000 -H 0.0.0.0',
+      cwd: '/home/user/webapp',
       env: {
         NODE_ENV: 'production',
-        PORT: 3000,
-        HOSTNAME: '0.0.0.0'
+        PORT: 3000
       },
       watch: false,
       instances: 1,
