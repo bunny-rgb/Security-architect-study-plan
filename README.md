@@ -1,514 +1,351 @@
-# Security Architect Training Platform
+# Security Architect Training Platform 🚀
 
-A comprehensive, mobile-first web application that trains complete beginners into expert Security Architects, specializing in Networking, Cybersecurity fundamentals, CDN/WAF/Bot/API security, and real-time incident handling.
+An **iPhone-optimized**, mobile-first web application designed to train beginners into expert security architects with expertise in networking, CDN, WAF, and real-time incident handling.
 
-## Overview
+## 🌟 Live Demo
 
-This platform provides:
-- **50 structured lessons** across 5 phases (Networking → Cybersecurity → CDN/Edge → WAF/Bot/API → Incident Response)
-- **200+ quiz questions** with detailed explanations
-- **10+ incident simulations** with decision trees
-- **Adaptive learning** system that adjusts difficulty based on performance
-- **Comprehensive progress tracking** and skill assessments
-- **Coach mode** for mentors to monitor and guide learners
+**Production URL**: https://3000-i70uoxestx7d5lzbs2d85-02b9cc79.sandbox.novita.ai
 
-## Tech Stack
+## ✨ Features
 
-### Backend
-- **Hono** - Fast, lightweight web framework for Cloudflare Workers
-- **Cloudflare Workers** - Edge runtime for API
-- **Cloudflare D1** - SQLite-based distributed database
-- **TypeScript** - Type-safe development
+### 🎯 Comprehensive Curriculum
+- **Phase 0**: Networking Foundations (OSI/TCP-IP, DNS, HTTP/HTTPS, TLS)
+- **Phase 1**: Cybersecurity Fundamentals (OWASP Top 10, Authentication, Encryption)
+- **Phase 2**: CDN & Edge Architecture (Caching, Origin Protection, Traffic Steering)
+- **Phase 3**: WAF/Bot/API Security (Rule Tuning, Bot Management, DDoS Mitigation)
+- **Phase 4**: Real-time Incident Response (Simulations, Decision Trees, Scoring)
+
+### 📱 Mobile-First Design
+- iPhone-optimized interface with large tap targets
+- Dark theme with smooth animations
+- Glass morphism effects and gradient accents
+- Progressive Web App (PWA) support
+- Offline-friendly lesson content
+
+### 🎮 Gamification & Engagement
+- Daily streaks and progress tracking
+- Achievement badges and readiness levels
+- Domain expertise scores
+- Real-time incident simulations with time pressure
+- Adaptive learning based on quiz performance
+
+### 📊 Progress Tracking
+- Overall completion percentage
+- Time invested tracking
+- Domain-specific scores (Networking, Web, TLS, WAF, Bot, API, IR)
+- Weak topics identification
+- Streak tracking (current & longest)
+
+### 🧠 Intelligent Learning System
+- **<60% quiz score**: Remediation content
+- **60-85% quiz score**: Normal progression
+- **>85% quiz score**: Advanced content unlocked
+- Non-trivial, real-world problem-based quizzes
+- Detailed explanations for every answer
+
+## 🛠 Tech Stack
 
 ### Frontend
-- **Next.js 14** - React framework with App Router
-- **React 18** - UI library
-- **Tailwind CSS** - Utility-first CSS (via CDN)
-- **Mobile-first design** - Optimized for iPhone and mobile devices
+- **Next.js 14** with App Router
+- **React 18** with TypeScript
+- **Tailwind CSS v4** for styling
+- Dark theme with custom animations
+- Mobile-first responsive design
 
-## Project Structure
+### Backend
+- **Hono** lightweight web framework
+- **Cloudflare Workers** edge runtime
+- **Cloudflare D1** SQLite database
+- **Wrangler** for development & deployment
+
+### Infrastructure
+- **PM2** for process management
+- **Cloudflare Pages** for deployment
+- Edge-first architecture
+
+## 📦 Project Structure
 
 ```
 webapp/
-├── src/
-│   ├── index.tsx              # Main Hono application
-│   ├── routes/                # API route handlers
-│   │   ├── auth.ts            # Authentication
-│   │   ├── lessons.ts         # Lesson management
-│   │   ├── daily.ts           # Daily plan generation
-│   │   ├── quiz.ts            # Quiz with adaptive logic
-│   │   ├── incidents.ts       # Incident simulations
-│   │   ├── progress.ts        # Progress tracking
-│   │   └── admin.ts           # Coach mode
-│   ├── lib/
-│   │   └── utils.ts           # Utility functions
-│   └── types/
-│       └── index.ts           # TypeScript definitions
-├── migrations/
-│   └── 0001_initial_schema.sql # Database schema
-├── seed.sql                    # Comprehensive seed data
-├── public/                     # Static assets
-├── ecosystem.config.cjs        # PM2 configuration
-├── wrangler.jsonc              # Cloudflare configuration
-├── vite.config.ts              # Vite build config
-└── package.json
-
+├── app/                      # Next.js App Router pages
+│   ├── page.tsx             # Home dashboard
+│   ├── learn/               # Lesson browser
+│   ├── lesson/[id]/         # Lesson detail & reading
+│   ├── quiz/[id]/           # Interactive quiz interface
+│   ├── incidents/           # Incident simulations
+│   │   └── [id]/            # Incident detail & gameplay
+│   ├── dashboard/           # Progress tracking
+│   ├── layout.tsx           # Root layout
+│   └── globals.css          # Global styles & animations
+├── src/                      # Hono API
+│   ├── index.tsx            # Main entry point
+│   ├── routes/              # API endpoints
+│   │   ├── auth.ts          # Authentication
+│   │   ├── lessons.ts       # Lesson management
+│   │   ├── quiz.ts          # Quiz system
+│   │   ├── daily.ts         # Daily progress
+│   │   ├── progress.ts      # Progress tracking
+│   │   ├── incidents.ts     # Incident simulations
+│   │   └── admin.ts         # Admin/coach features
+│   └── types/               # TypeScript types
+├── migrations/               # D1 database schema
+│   └── 0001_initial_schema.sql
+├── seed.sql                  # Sample data (50 lessons, 200 quizzes, 10 incidents)
+├── public/                   # Static assets
+├── ecosystem.config.cjs      # PM2 configuration
+├── wrangler.jsonc           # Cloudflare configuration
+├── next.config.js           # Next.js configuration
+└── package.json             # Dependencies & scripts
 ```
 
-## Curriculum
+## 🚀 Quick Start
 
-### Phase 0: Networking Foundations (Days 1-10)
-- OSI Model & TCP/IP
-- IPv4/IPv6, Subnetting, CIDR
-- TCP 3-way handshake, UDP
-- DNS, HTTP/HTTPS, TLS
-- Load balancing, caching, proxies
-- Network diagnostic tools
-
-### Phase 1: Cybersecurity Foundations (Days 11-20)
-- CIA Triad, Threat Modeling
-- Authentication & Authorization
-- OWASP Top 10 (complete coverage)
-- XSS, SQL Injection, CSRF, SSRF
-- Security headers (CSP, HSTS, etc.)
-- Encryption, hashing, salting
-- Incident Response fundamentals
-
-### Phase 2: CDN & Edge Architecture (Days 21-30)
-- CDN architecture (edge, origin shield)
-- Cache keys, TTL strategies
-- Cache control patterns
-- Origin protection strategies
-- Edge computing & workers
-- Traffic steering & failover
-- Multi-CDN strategies
-
-### Phase 3: WAF / Bot / API Security (Days 31-40)
-- WAF fundamentals & tuning
-- Bot detection & management
-- API security best practices
-- Rate limiting patterns
-- DDoS mitigation (L3/L4/L7)
-- JWT security
-- API gateway security
-
-### Phase 4: Incident Response Simulations (Days 41-50)
-- Incident detection & triage
-- DDoS incident response
-- Credential stuffing handling
-- False positive resolution
-- API abuse response
-- Cache poisoning mitigation
-- Origin failure recovery
-- Traffic spike analysis
-- Bot bypass handling
-- Post-mortem best practices
-
-## Features
-
-### Adaptive Learning System
-- **Quiz Performance Tracking**: <60% triggers remediation mode
-- **Automatic Difficulty Adjustment**: Strong performance unlocks harder content
-- **Personalized Revision Schedule**: Weak topics get extra review
-- **Knowledge Domain Scoring**: Track mastery across 7 domains
-
-### Progress Tracking
-- **Daily Streak Counter**: Gamification for consistent learning
-- **Time Spent Tracking**: Monitor engagement
-- **Quiz Averages**: Overall and per-lesson performance
-- **Weak Topic Identification**: Focus areas for improvement
-- **Readiness Level**: Beginner → Junior → Mid → Senior → Expert
-- **Achievement System**: Unlock badges for milestones
-
-### Coach Mode (Admin Features)
-- View all users and their progress
-- Detailed quiz attempt analysis
-- Incident simulation performance
-- Add mentor notes and feedback
-- Assign custom tasks with due dates
-- Export user progress as JSON
-
-## Local Development Setup
+### Prerequisites
+- Node.js 18+ and npm
+- Wrangler CLI
+- PM2 (pre-installed in sandbox)
 
 ### 1. Install Dependencies
 ```bash
-cd /home/user/webapp
 npm install
 ```
 
-### 2. Create D1 Database (First Time Only)
+### 2. Setup Database
 ```bash
-# Create production database
+# Create D1 database
 npm run db:create
 
-# Copy the database_id from output and update wrangler.jsonc
-```
-
-### 3. Apply Migrations
-```bash
-# Create local database and apply schema
+# Apply migrations
 npm run db:migrate:local
-```
 
-### 4. Seed Database
-```bash
-# Load 50 lessons, 200 quiz questions, 10 incident scenarios
+# Seed data (50 lessons, 200 quizzes, 10 incidents)
 npm run db:seed:local
 ```
 
-### 5. Build Application
+### 3. Build Application
 ```bash
-npm run build
+# Build API (Hono)
+npm run build:api
+
+# Build Frontend (Next.js)
+npm run build:frontend
 ```
 
-### 6. Start Development Server (PM2)
+### 4. Start Development Server
 ```bash
-# Clean port first
+# Clean ports
 npm run clean-port
 
-# Start with PM2
-npm run start:pm2
+# Start both API & UI with PM2
+pm2 start ecosystem.config.cjs
 
-# Check logs
-npm run logs:pm2
-```
+# Check status
+pm2 list
 
-### 7. Access Application
-```
-http://localhost:3000
-```
-
-## Database Management
-
-### Reset Local Database (Wipe & Reseed)
-```bash
-npm run db:reset
-```
-
-### Execute SQL Queries
-```bash
-# Local database
-wrangler d1 execute webapp-production --local --command="SELECT * FROM lessons LIMIT 5"
-
-# Production database
-wrangler d1 execute webapp-production --command="SELECT COUNT(*) FROM users"
-```
-
-### Migrations
-```bash
-# Create new migration
-# Add file: migrations/0002_your_migration.sql
-
-# Apply to local
-npm run db:migrate:local
-
-# Apply to production
-npm run db:migrate:prod
-```
-
-## API Endpoints
-
-### Authentication
-- `POST /api/auth/guest` - Create/login guest user
-- `GET /api/auth/me/:userId` - Get user info
-
-### Lessons
-- `GET /api/lessons` - List all lessons (with optional phase filter)
-- `GET /api/lessons/:id` - Get lesson details + quiz questions
-- `GET /api/lessons/:id/can-access` - Check prerequisites
-
-### Daily Learning
-- `GET /api/daily/today?userId=X` - Get today's lesson (auto-generated)
-- `POST /api/daily/start` - Start lesson (create progress record)
-- `POST /api/daily/complete-reading` - Mark lesson as read
-
-### Quizzes
-- `GET /api/quiz/:lessonId?userId=X` - Get quiz questions
-- `POST /api/quiz/submit` - Submit answers (returns score + adaptive feedback)
-
-### Incidents
-- `GET /api/incidents?userId=X` - List all incident scenarios
-- `GET /api/incidents/:id?userId=X` - Get scenario details
-- `POST /api/incidents/:id/attempt` - Submit incident decisions
-
-### Progress
-- `GET /api/progress/summary?userId=X` - Comprehensive progress summary
-- `GET /api/progress/history?userId=X` - Recent activity history
-- `GET /api/progress/weak-areas?userId=X` - Topics needing review
-- `GET /api/progress/achievements?userId=X` - Earned achievements
-
-### Admin (Coach Mode)
-**Requires `X-Admin-Token` header**
-- `GET /api/admin/users` - List all users with progress
-- `GET /api/admin/user/:userId/progress` - Detailed user analysis
-- `POST /api/admin/mentor-note` - Add coaching feedback
-- `POST /api/admin/assign` - Assign custom task
-- `GET /api/admin/export/:userId` - Export user data as JSON
-
-## Deployment
-
-### Production Deployment to Cloudflare Pages
-
-1. **Setup Cloudflare API Key**
-   - Visit Cloudflare Dashboard
-   - Get API token with Pages and D1 permissions
-   - Store securely
-
-2. **Create Production Database**
-   ```bash
-   npm run db:create
-   # Update database_id in wrangler.jsonc
-   ```
-
-3. **Apply Production Migrations**
-   ```bash
-   npm run db:migrate:prod
-   ```
-
-4. **Seed Production Database**
-   ```bash
-   wrangler d1 execute webapp-production --file=./seed.sql
-   ```
-
-5. **Deploy Application**
-   ```bash
-   npm run deploy
-   ```
-
-6. **Set Environment Variables** (if needed)
-   ```bash
-   wrangler pages secret put SEED_TOKEN --project-name webapp
-   ```
-
-## Adaptive Learning Logic
-
-### Quiz Scoring
-- Each question has points (typically 10-15)
-- Total score calculated as percentage
-- Explanations provided for all answers
-
-### Performance-Based Adaptation
-- **<60% score**: Needs remediation
-  - Repeat lesson tomorrow
-  - Add to revision schedule
-  - Provide simpler explanations
-  
-- **60-85% score**: Normal progression
-  - Move to next lesson
-  - Standard difficulty maintained
-
-- **>85% score**: Advanced track
-  - Unlock harder content
-  - Optional advanced readings
-  - Skip basic reviews
-
-### Knowledge Domain Tracking
-System tracks mastery across 7 domains:
-1. Networking
-2. Web protocols
-3. TLS/Security
-4. WAF/Filtering
-5. Bot management
-6. API security
-7. Incident response
-
-Each quiz updates relevant domain scores, identifying weak areas.
-
-## Incident Simulation System
-
-### Decision Tree Structure
-1. **Initial State**: Metrics, alerts, context
-2. **Decision Points**: Multiple choice with consequences
-3. **Scoring**: Each decision earns points
-4. **Outcomes**: Success, Partial, or Failure
-5. **Feedback**: Detailed explanation of decisions
-6. **Optimal Path**: Best decision sequence shown after attempt
-
-### Scoring Algorithm
-- Each decision has a score (0-100)
-- Final score is average of all decisions
-- 85+ = Success
-- 60-84 = Partial
-- <60 = Failure
-
-### Example Scenarios
-- Credential stuffing attack
-- DDoS (HTTP flood)
-- WAF false positive
-- API scraping/abuse
-- Cache poisoning
-- Origin failure
-- Traffic spike analysis
-- Bot bypass attempt
-
-## Mobile-First Design
-
-### Key Features
-- Responsive layouts (320px - 2560px)
-- Large tap targets (min 44x44px)
-- Readable font sizes (16px+ body text)
-- Optimized for portrait orientation
-- Touch-friendly interactions
-- Fast loading (< 2s on 3G)
-- Progressive enhancement
-- Offline-capable lesson reading (future)
-
-### iPhone Optimization
-- Safe area insets respected
-- Scroll behaviors optimized
-- Input zoom disabled on form fields
-- Hardware acceleration for animations
-- Lazy loading for images
-
-## Testing
-
-### Manual Testing Checklist
-- [ ] Create guest account
-- [ ] Complete first lesson
-- [ ] Take quiz (intentionally score <60%, 70%, 95%)
-- [ ] Verify adaptive behavior
-- [ ] Complete incident simulation
-- [ ] Check progress dashboard
-- [ ] Test coach mode (with admin token)
-
-### API Testing
-```bash
-# Create user
-curl -X POST http://localhost:3000/api/auth/guest \
-  -H "Content-Type: application/json" \
-  -d '{"username":"testuser"}'
-
-# Get today's lesson
-curl "http://localhost:3000/api/daily/today?userId=USER_ID"
-
-# Submit quiz
-curl -X POST http://localhost:3000/api/quiz/submit \
-  -H "Content-Type: application/json" \
-  -d '{"userId":"USER_ID","lessonId":1,"answers":{"1":3,"2":1}}'
-```
-
-## Troubleshooting
-
-### Port 3000 Already in Use
-```bash
-npm run clean-port
-# Or
-pm2 delete webapp
-```
-
-### Database Not Found
-```bash
-# Reset local database
-npm run db:reset
-```
-
-### Build Errors
-```bash
-# Clean and rebuild
-rm -rf dist .wrangler
-npm run build
-```
-
-### PM2 Logs
-```bash
 # View logs
 npm run logs:pm2
-
-# Or with streaming
-pm2 logs webapp
 ```
 
-## Performance Metrics
+### 5. Access Application
+- **UI**: http://localhost:3000
+- **API**: http://localhost:3001/api
 
-### Target Metrics
-- **TTFB**: < 200ms (edge cached)
-- **FCP**: < 1.5s
-- **LCP**: < 2.5s
-- **CLS**: < 0.1
-- **API Response**: < 100ms (D1 queries)
+## 📱 Pages & Features
 
-### Database Performance
-- **D1 Query Time**: ~5-50ms per query
-- **Concurrent Users**: 1000+ (Cloudflare Workers scale)
-- **Storage Limit**: 2GB (D1 free tier)
+### 🏠 Home Dashboard
+- Today's lesson plan
+- Quick stats (lessons completed, time invested, streak)
+- Domain progress overview
+- Quick navigation to all sections
 
-## Security Considerations
+### 📚 Learn (Lesson Browser)
+- Filter by phase (0-4)
+- View all 50 lessons organized by curriculum
+- Difficulty indicators (beginner, intermediate, advanced)
+- Reading time estimates
+
+### 📖 Lesson Detail
+- Immersive reading experience with scroll progress
+- Learning objectives & key takeaways
+- Hands-on micro-labs
+- Smooth animations & dark theme
+
+### 🧠 Quiz Interface
+- Single & multiple-choice questions
+- Real-time answer checking
+- Detailed explanations
+- Progress tracking
+- Adaptive scoring (remediation/normal/advanced paths)
+
+### 🚨 Incident Response Simulations
+- Real-time decision-making under pressure
+- Timer-based challenges
+- Live metrics tracking
+- Decision tree gameplay
+- Score & feedback system
+
+### 📊 Progress Dashboard
+- Overall completion stats
+- Domain expertise breakdown
+- Streak tracking
+- Weak topics identification
+- Readiness level progression
+- Achievement badges
+
+## 📊 Database Schema
+
+### Core Tables
+- **users**: User accounts & profiles
+- **lessons**: 50+ curriculum lessons
+- **lesson_modules**: Lesson content chunks
+- **daily_plan**: Personalized daily learning paths
+- **daily_progress**: Progress tracking
+- **quiz_questions**: 200+ quiz questions
+- **quiz_attempts**: Quiz submissions & scores
+- **incident_scenarios**: Real-world incident simulations
+- **incident_attempts**: Incident response attempts
+- **achievements**: Gamification badges
+
+## 🎨 Design System
+
+### Colors
+- **Dark Background**: `#0a0a0f`
+- **Surface**: `#141419`
+- **Elevated**: `#1c1c24`
+- **Border**: `#2a2a35`
+- **Primary (Indigo)**: `#6366f1`
+- **Secondary (Purple)**: `#8b5cf6`
+- **Accent (Pink)**: `#ec4899`
+- **Success (Green)**: `#10b981`
+- **Warning (Amber)**: `#f59e0b`
+- **Danger (Red)**: `#ef4444`
+
+### Animations
+- Fade in, slide up, pulse, bounce
+- Card hover effects
+- Button glow effects
+- Progress bar gradients
+- Glass morphism
+- Gradient text effects
+
+## 🔧 API Endpoints
 
 ### Authentication
-- Guest mode (no passwords stored)
-- Session tokens in HTTP-only cookies (future)
-- Rate limiting on auth endpoints
+- `POST /api/auth/guest` - Create guest user
 
-### Admin Access
-- Token-based authentication
-- Environment variable storage
-- Audit logging of admin actions
+### Lessons
+- `GET /api/lessons` - List all lessons
+- `GET /api/lessons/:id` - Get lesson detail
 
-### Data Privacy
-- No PII collected (email optional)
-- Progress data belongs to user
-- Export functionality for data portability
+### Daily Progress
+- `GET /api/daily/today?userId=:id` - Get today's lesson
+- `POST /api/daily/complete` - Mark lesson complete
 
-## Future Enhancements
+### Quizzes
+- `GET /api/quiz/:lessonId` - Get quiz questions
+- `POST /api/quiz/submit` - Submit quiz answers
 
-### Planned Features
-- [ ] OAuth authentication (GitHub, Google)
-- [ ] Real-time multiplayer incident simulations
-- [ ] Video lessons integration
-- [ ] Interactive labs (code playgrounds)
-- [ ] Certification system
-- [ ] Community forum
-- [ ] Leaderboards
-- [ ] Mobile app (React Native)
-- [ ] Offline-first with service workers
-- [ ] AI-powered personalized hints
+### Incidents
+- `GET /api/incidents` - List incident scenarios
+- `GET /api/incidents/:id` - Get incident detail
+- `POST /api/incidents/:id/attempt` - Submit incident response
 
-### Content Expansion
-- [ ] Advanced topics (Zero Trust, SIEM, Threat Hunting)
-- [ ] Vendor-specific modules (Cloudflare, Akamai, Fastly)
-- [ ] Compliance (GDPR, SOC 2, PCI DSS)
-- [ ] Cloud security (AWS, Azure, GCP)
+### Progress
+- `GET /api/progress/summary?userId=:id` - Get user progress
 
-## Contributing
+### Admin
+- `POST /api/admin/seed` - Seed database (requires SEED_TOKEN)
+- `GET /api/admin/user/:id/progress` - View user progress (coach mode)
 
-This is a training platform. Contributions welcome:
-1. Fork repository
-2. Create feature branch
-3. Add lessons, quizzes, or incidents
-4. Submit pull request
+## 📈 Adaptive Learning Logic
 
-### Content Guidelines
-- Accurate, practical information
-- Real-world examples
-- Clear explanations for all answers
-- Mobile-friendly formatting
-- No placeholder content
+The platform adjusts content based on quiz performance:
 
-## License
+- **Score < 60%**: Triggers remediation lessons
+- **Score 60-85%**: Normal progression
+- **Score > 85%**: Unlocks advanced content & challenges
 
-MIT License - See LICENSE file for details
+## 🎯 Content Highlights
 
-## Support
+### 50 Curated Lessons
+- 10 lessons per phase (Phase 0-4)
+- Practical, real-world focus
+- 8-15 minute reading time each
+- Includes objectives, takeaways, and labs
 
-For issues or questions:
-- Check troubleshooting section
-- Review API documentation
-- Test with provided examples
-- Check PM2 logs for errors
+### 200+ Quiz Questions
+- Multiple-choice & multiple-correct formats
+- Scenario-based decision trees
+- Short answer questions
+- All with detailed explanations
 
-## Changelog
+### 10 Incident Simulations
+- Credential Stuffing
+- HTTP Flood DDoS
+- WAF False Positives
+- API Scraping
+- Cache Poisoning
+- Origin Failure
+- Traffic Spikes
+- Bot Bypass
+- And more...
 
-### v1.0.0 (2024)
-- Initial release
-- 50 lessons across 5 phases
-- 200+ quiz questions
-- 10 incident simulations
-- Adaptive learning system
-- Progress tracking
-- Coach mode
+## 🚀 Deployment
+
+### Local Development
+```bash
+pm2 start ecosystem.config.cjs
+```
+
+### Production (Cloudflare Pages)
+```bash
+# Build
+npm run build
+
+# Deploy
+npm run deploy
+```
+
+## 👥 Coach/Admin Mode
+
+Track learner progress:
+- View all user attempts
+- Assign specific lessons
+- Export progress data as JSON
+- Add coaching notes
+
+## 🌟 What Makes This Special
+
+### 1. Real-World Focus
+- Content based on actual CDN/WAF scenarios
+- Industry best practices
+- Practical skills over theory
+
+### 2. Engaging Experience
+- Beautiful dark UI optimized for reading
+- Smooth animations & transitions
+- Gamification elements
+- Progress visualization
+
+### 3. Adaptive Learning
+- Intelligent difficulty adjustment
+- Personalized learning paths
+- Weak topic identification
+
+### 4. Mobile-First
+- iPhone-optimized design
+- Large touch targets
+- Fast loading times
+- PWA support
+
+## 📝 License
+
+MIT License - feel free to use for learning!
+
+## 🙏 Credits
+
+Built with love for aspiring security architects who want to master CDN, WAF, and real-time incident handling.
 
 ---
 
-**Built with ❤️ for aspiring Security Architects**
-
-Train hard. Secure harder. 🔒
+**Start your journey today!** 🚀
