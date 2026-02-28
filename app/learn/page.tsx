@@ -20,13 +20,13 @@ export default function LearnPage() {
   const [selectedPhase, setSelectedPhase] = useState<number | null>(null)
 
   useEffect(() => {
-    const fetchLessons = async () => {
-      const res = await fetch('/api/lessons')
-      const data = await res.json()
-      setLessons(data.lessons)
-      setLoading(false)
-    }
-    fetchLessons()
+    // Use mock data for now
+    import('@/lib/mockData').then(({ mockLessons }) => {
+      setTimeout(() => {
+        setLessons(mockLessons)
+        setLoading(false)
+      }, 1000)
+    })
   }, [])
 
   const phases = [

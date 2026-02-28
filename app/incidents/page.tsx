@@ -20,13 +20,13 @@ export default function IncidentsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchIncidents = async () => {
-      const res = await fetch('/api/incidents')
-      const data = await res.json()
-      setIncidents(data.incidents)
-      setLoading(false)
-    }
-    fetchIncidents()
+    // Use mock data
+    import('@/lib/mockData').then(({ mockIncidents }) => {
+      setTimeout(() => {
+        setIncidents(mockIncidents as any)
+        setLoading(false)
+      }, 800)
+    })
   }, [])
 
   const getCategoryIcon = (category: string) => {

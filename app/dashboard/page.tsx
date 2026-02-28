@@ -44,16 +44,13 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchProgress = async () => {
-      const userId = localStorage.getItem('userId')
-      if (!userId) return
-
-      const res = await fetch(`/api/progress/summary?userId=${userId}`)
-      const data = await res.json()
-      setProgress(data)
-      setLoading(false)
-    }
-    fetchProgress()
+    // Use mock data
+    import('@/lib/mockData').then(({ mockProgress }) => {
+      setTimeout(() => {
+        setProgress(mockProgress as any)
+        setLoading(false)
+      }, 800)
+    })
   }, [])
 
   if (loading) {

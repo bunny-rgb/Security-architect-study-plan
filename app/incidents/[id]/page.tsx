@@ -34,17 +34,17 @@ export default function IncidentDetailPage() {
   const [userId, setUserId] = useState<string | null>(null)
 
   useEffect(() => {
-    const storedUserId = localStorage.getItem('userId')
+    const storedUserId = typeof window !== 'undefined' ? localStorage.getItem('userId') : null
     setUserId(storedUserId)
 
-    const fetchIncident = async () => {
-      const res = await fetch(`/api/incidents/${params.id}`)
-      const data = await res.json()
-      setIncident(data.incident)
-      setGameState(data.incident.initial_state)
+    // Use mock data
+    import('@/lib/mockData').then(({ mockIncidents }) => {
+      const incidentId = parseInt(params.id as string)
+      const foundIncident = mockIncidents.find(i => i.id === incidentId)
+      setIncident(foundIncident as any || null)
+      setGameState(foundIncident?.initial_state || null)
       setLoading(false)
-    }
-    fetchIncident()
+    })
   }, [params.id])
 
   useEffect(() => {

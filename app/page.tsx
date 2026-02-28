@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { mockDailyPlan, mockProgress, mockUser } from '@/lib/mockData'
 
 interface DailyPlan {
   date: string
@@ -42,48 +43,82 @@ export default function HomePage() {
   const [progress, setProgress] = useState<ProgressSummary | null>(null)
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState<string | null>(null)
+  const [showWelcome, setShowWelcome] = useState(true)
 
   useEffect(() => {
-    // Get or create user
-    const initUser = async () => {
-      let storedUserId = localStorage.getItem('userId')
-      
-      if (!storedUserId) {
-        // Create guest user
-        const res = await fetch('/api/auth/guest', { method: 'POST' })
-        const data = await res.json()
-        storedUserId = data.user.id
-        if (storedUserId) {
-          localStorage.setItem('userId', storedUserId)
-        }
-      }
-      
-      setUserId(storedUserId)
-      
-      // Fetch daily plan and progress
-      const [planRes, progressRes] = await Promise.all([
-        fetch(`/api/daily/today?userId=${storedUserId}`),
-        fetch(`/api/progress/summary?userId=${storedUserId}`)
-      ])
-      
-      const planData = await planRes.json()
-      const progressData = await progressRes.json()
-      
-      setDailyPlan(planData)
-      setProgress(progressData)
+    // Simulate loading with animation
+    const timer = setTimeout(() => {
+      setUserId(mockUser.id)
+      setDailyPlan(mockDailyPlan)
+      setProgress(mockProgress as any)
       setLoading(false)
-    }
-    
-    initUser()
+      
+      // Hide welcome after 3 seconds
+      setTimeout(() => setShowWelcome(false), 3000)
+    }, 2000)
+
+    return () => clearTimeout(timer)
   }, [])
 
-  if (loading) {
+  if (loading || showWelcome) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading your journey...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-dark-bg via-dark-surface to-dark-bg overflow-hidden relative">
+        {/* Animated background particles */}
+        <div className="absolute inset-0">
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-2 h-2 bg-primary rounded-full opacity-20"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
+                animationDelay: `${Math.random() * 2}s`
+              }}
+            />
+          ))}
         </div>
+
+        <div className="text-center z-10 px-4">
+          {loading ? (
+            <>
+              {/* Loading spinner */}
+              <div className="relative mb-8">
+                <div className="w-24 h-24 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-5xl animate-pulse">🛡️</div>
+                </div>
+              </div>
+              <h1 className="text-2xl font-bold gradient-text mb-3 animate-fade-in">
+                Initializing Your Security Journey
+              </h1>
+              <p className="text-gray-400 animate-fade-in" style={{animationDelay: '0.5s'}}>
+                Preparing your personalized learning path...
+              </p>
+            </>
+          ) : (
+            <>
+              {/* Welcome animation */}
+              <div className="animate-slide-up">
+                <div className="text-7xl mb-6 animate-bounce-slow">🎯</div>
+                <h1 className="text-4xl font-bold mb-4">
+                  <span className="gradient-text">Welcome, Security Architect!</span>
+                </h1>
+                <p className="text-xl text-gray-300 mb-2">Your journey from beginner to expert starts now</p>
+                <p className="text-gray-400 text-sm">Loading your dashboard...</p>
+              </div>
+            </>
+          )}
+        </div>
+
+        <style jsx>{`
+          @keyframes float {
+            0%, 100% { transform: translateY(0px) translateX(0px); }
+            25% { transform: translateY(-20px) translateX(10px); }
+            50% { transform: translateY(-10px) translateX(-10px); }
+            75% { transform: translateY(-15px) translateX(5px); }
+          }
+        `}</style>
       </div>
     )
   }
@@ -189,19 +224,9 @@ export default function HomePage() {
                       Tap to start your lesson and unlock the quiz
                     </p>
                     
-                    {dailyPlan.completed ? (
-                      <div className="flex items-center gap-2 text-success text-sm">
-                        <span>✓</span>
-                        <span>Lesson completed!</span>
-                        {!dailyPlan.quiz_completed && (
-                          <span className="text-warning">• Quiz pending</span>
-                        )}
-                      </div>
-                    ) : (
-                      <button className="w-full bg-gradient-to-r from-primary to-secondary text-white font-bold py-3 rounded-xl btn-glow">
-                        Start Learning →
-                      </button>
-                    )}
+                    <button className="w-full bg-gradient-to-r from-primary to-secondary text-white font-bold py-3 rounded-xl btn-glow">
+                      Start Learning →
+                    </button>
                   </div>
                 </div>
               </div>

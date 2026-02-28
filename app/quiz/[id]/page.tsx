@@ -35,16 +35,16 @@ export default function QuizPage() {
   const [startTime] = useState(Date.now())
 
   useEffect(() => {
-    const storedUserId = localStorage.getItem('userId')
+    const storedUserId = typeof window !== 'undefined' ? localStorage.getItem('userId') : null
     setUserId(storedUserId)
 
-    const fetchQuiz = async () => {
-      const res = await fetch(`/api/quiz/${params.id}`)
-      const data = await res.json()
-      setQuestions(data.questions)
+    // Use mock data
+    import('@/lib/mockData').then(({ mockQuizQuestions }) => {
+      const lessonId = parseInt(params.id as string)
+      const filteredQuestions = mockQuizQuestions.filter(q => q.lesson_id === lessonId)
+      setQuestions(filteredQuestions as any)
       setLoading(false)
-    }
-    fetchQuiz()
+    })
   }, [params.id])
 
   const currentQuestion = questions[currentIndex]

@@ -28,16 +28,16 @@ export default function LessonPage() {
   const [userId, setUserId] = useState<string | null>(null)
 
   useEffect(() => {
-    const storedUserId = localStorage.getItem('userId')
+    const storedUserId = typeof window !== 'undefined' ? localStorage.getItem('userId') : null
     setUserId(storedUserId)
 
-    const fetchLesson = async () => {
-      const res = await fetch(`/api/lessons/${params.id}`)
-      const data = await res.json()
-      setLesson(data.lesson)
+    // Use mock data
+    import('@/lib/mockData').then(({ mockLessons }) => {
+      const lessonId = parseInt(params.id as string)
+      const foundLesson = mockLessons.find(l => l.id === lessonId)
+      setLesson(foundLesson as any || null)
       setLoading(false)
-    }
-    fetchLesson()
+    })
 
     // Scroll progress tracking
     const handleScroll = () => {
