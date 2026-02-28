@@ -1,0 +1,57 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Next.js
+/.next/
+/out/
+next-env.d.ts
+
+# Production
+/build
+dist/
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.dev.vars
+
+# Vercel
+.vercel
+
+# Wrangler
+.wrangler/
+worker-configuration.d.ts
+
+# PM2
+.pm2/
+pids/
+logs/
+*.log
+
+# Database
+*.db
+*.db-shm
+*.db-wal
+
+# Backup files
+*.backup
+*.bak
+*.tar.gz
+*.zip
