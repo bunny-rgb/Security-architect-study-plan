@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { fullQuizDatabase, QuizQuestion } from '@/lib/fullQuizDatabase'
+import { comprehensiveMITQuizzes as fullQuizDatabase, QuizQuestion } from '@/lib/comprehensiveMITQuizzes'
 import { getCurrentUser, getUserProgress, markQuizComplete } from '@/lib/auth'
 
 export default function QuizPage({ params }: { params: { id: string } }) {
@@ -11,7 +11,7 @@ export default function QuizPage({ params }: { params: { id: string } }) {
   const [user, setUser] = useState<any>(null)
   const [questions, setQuestions] = useState<QuizQuestion[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [answers, setAnswers] = useState<Record<number, number>>({})
+  const [answers, setAnswers] = useState<Record<string, number>>({})
   const [showResult, setShowResult] = useState(false)
   const [score, setScore] = useState(0)
   const [showExplanation, setShowExplanation] = useState(false)
@@ -88,8 +88,7 @@ export default function QuizPage({ params }: { params: { id: string } }) {
     setShowResult(true)
 
     // Mark quiz as complete
-    const timeSpent = Math.floor((Date.now() - startTime) / 1000)
-    markQuizComplete(lessonId, finalScore, timeSpent)
+    markQuizComplete(user.id, lessonId, finalScore)
   }
 
   const handleNextLesson = () => {

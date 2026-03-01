@@ -42,7 +42,7 @@ export default function LessonPage({ params }: { params: { id: string } }) {
   }
 
   const handleCompleteLesson = () => {
-    markLessonComplete(lessonId)
+    markLessonComplete(user.id, lessonId)
     router.push(`/quiz/${lessonId}`)
   }
 
@@ -180,18 +180,16 @@ export default function LessonPage({ params }: { params: { id: string } }) {
         )}
 
         {/* Content Sections */}
-        {lesson.content.map((section, index) => (
+        {lesson.content.sections.map((section, index) => (
           <div key={index} className="bg-white rounded-[14px] p-6 border border-[#E7EAF0]">
             <h2 className="text-[20px] font-semibold text-[#111827] mb-4">
-              {section.heading}
+              {section.title}
             </h2>
             
             <div className="space-y-4">
-              {section.paragraphs.map((paragraph, pIndex) => (
-                <p key={pIndex} className="text-[15px] text-[#6B7280] leading-relaxed">
-                  {paragraph}
-                </p>
-              ))}
+              <p className="text-[15px] text-[#6B7280] leading-relaxed">
+                {section.content}
+              </p>
             </div>
 
             {section.keyPoints && section.keyPoints.length > 0 && (
@@ -209,38 +207,16 @@ export default function LessonPage({ params }: { params: { id: string } }) {
               </div>
             )}
 
-            {section.example && (
+            {section.codeExample && (
               <div className="mt-4 bg-[#F7F8FA] rounded-[10px] p-4 border border-[#E7EAF0]">
-                <div className="flex items-center gap-2 mb-2">
-                  <svg className="w-4 h-4 text-[#2563EB]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span className="text-[13px] font-semibold text-[#2563EB]">Example</span>
-                </div>
-                <p className="text-[14px] text-[#6B7280] leading-relaxed">
-                  {section.example}
-                </p>
+                <pre className="text-[13px] text-[#111827] overflow-x-auto">
+                  <code>{section.codeExample}</code>
+                </pre>
               </div>
             )}
           </div>
         ))}
 
-        {/* Key Takeaways */}
-        {lesson.key_takeaways && lesson.key_takeaways.length > 0 && (
-          <div className="bg-gradient-to-br from-[#2563EB] to-[#1d4ed8] rounded-[14px] p-6 text-white">
-            <h3 className="text-[18px] font-semibold mb-4">Key Takeaways</h3>
-            <div className="space-y-3">
-              {lesson.key_takeaways.map((takeaway, index) => (
-                <div key={index} className="flex items-start gap-3">
-                  <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <p className="text-[14px] leading-relaxed">{takeaway}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Complete Lesson Button */}
         <div className="sticky bottom-20 md:bottom-4 bg-white rounded-[14px] p-4 border border-[#E7EAF0] shadow-lg">
