@@ -461,8 +461,241 @@ sysctl -w net.ipv4.tcp_max_syn_backlog=2048`
     ]
   },
 
-  // Add 8 more Phase 0 lessons here (DNS, Subnetting, Routing, etc.)
-  // For brevity, I'll add key lessons from each phase
+  // PHASE 0: Lesson 3 - TCP vs UDP Communication
+  {
+    id: 3,
+    title: "TCP vs UDP: Protocol Comparison",
+    phase: 0,
+    phaseName: "Network Fundamentals",
+    day: 3,
+    difficulty: 'beginner',
+    reading_time_min: 20,
+    tags: ['tcp', 'udp', 'protocols', 'transport-layer'],
+    description: "Understand the fundamental differences between TCP and UDP, and learn when to use each protocol for optimal performance and reliability",
+    objectives: [
+      "Master the differences between TCP and UDP protocols",
+      "Understand connection-oriented vs connectionless communication",
+      "Learn the TCP three-way handshake process",
+      "Identify real-world use cases for each protocol",
+      "Recognize performance and security trade-offs"
+    ],
+    content: {
+      introduction: "TCP (Transmission Control Protocol) and UDP (User Datagram Protocol) are the two primary transport layer protocols. While TCP ensures reliable, ordered delivery of data, UDP prioritizes speed and efficiency. Understanding when to use each is crucial for building high-performance, secure applications.",
+      sections: [
+        {
+          title: "TCP: Connection-Oriented Reliability",
+          content: "TCP is a connection-oriented protocol that establishes a reliable connection before transmitting data. It guarantees that data arrives in order, without errors or duplication. TCP uses a three-way handshake (SYN, SYN-ACK, ACK) to establish connections, implements flow control to prevent overwhelming receivers, and provides congestion control to adapt to network conditions. This makes TCP ideal for applications where data accuracy is critical, such as web browsing, email, file transfers, and database transactions.",
+          keyPoints: [
+            "Connection-oriented: Establishes connection before data transfer",
+            "Reliable delivery: Guarantees data arrives in correct order",
+            "Error detection and correction with acknowledgments (ACKs)",
+            "Flow control prevents overwhelming the receiver",
+            "Congestion control adapts to network conditions",
+            "Higher overhead due to connection management",
+            "Use cases: HTTP/HTTPS, FTP, SMTP, SSH, database connections"
+          ],
+          codeExample: `// TCP Server Example (Node.js)
+const net = require('net');
+
+const server = net.createServer((socket) => {
+  console.log('Client connected');
+  
+  socket.on('data', (data) => {
+    console.log('Received:', data.toString());
+    socket.write('ACK: Message received');
+  });
+  
+  socket.on('end', () => {
+    console.log('Client disconnected');
+  });
+});
+
+server.listen(8080, () => {
+  console.log('TCP server listening on port 8080');
+});`
+        },
+        {
+          title: "UDP: Speed Over Reliability",
+          content: "UDP is a connectionless protocol that sends data without establishing a connection or ensuring delivery. It's lightweight, fast, and has minimal overhead, making it perfect for real-time applications where speed matters more than perfect accuracy. UDP doesn't guarantee delivery, order, or error correction - it simply sends packets (datagrams) and hopes they arrive. This makes UDP ideal for streaming media, online gaming, VoIP, DNS queries, and IoT sensor data where occasional packet loss is acceptable.",
+          keyPoints: [
+            "Connectionless: No handshake or connection establishment",
+            "Best-effort delivery: No guarantee of arrival or order",
+            "No error correction or retransmission",
+            "Minimal overhead and lower latency",
+            "Supports broadcast and multicast",
+            "Stateless protocol simplifies server design",
+            "Use cases: Video streaming, gaming, VoIP, DNS, DHCP, IoT"
+          ],
+          codeExample: `// UDP Server Example (Node.js)
+const dgram = require('dgram');
+const server = dgram.createSocket('udp4');
+
+server.on('message', (msg, rinfo) => {
+  console.log(\`Received: \${msg} from \${rinfo.address}:\${rinfo.port}\`);
+  
+  // Send response (optional)
+  const response = Buffer.from('Message received');
+  server.send(response, rinfo.port, rinfo.address);
+});
+
+server.bind(9090, () => {
+  console.log('UDP server listening on port 9090');
+});`
+        },
+        {
+          title: "TCP Three-Way Handshake Explained",
+          content: "The TCP three-way handshake is how two devices establish a reliable connection. First, the client sends a SYN (synchronize) packet to the server requesting a connection. Second, the server responds with a SYN-ACK (synchronize-acknowledge) packet, confirming the request and sending its own sequence number. Third, the client sends an ACK (acknowledge) packet, confirming receipt of the server's response. After this handshake, data transfer can begin. This process ensures both parties are ready to communicate and establishes initial sequence numbers for tracking packets.",
+          keyPoints: [
+            "Step 1: Client → Server: SYN (sequence number X)",
+            "Step 2: Server → Client: SYN-ACK (sequence Y, ack X+1)",
+            "Step 3: Client → Server: ACK (ack Y+1)",
+            "Establishes sequence numbers for both directions",
+            "Confirms both parties are ready to communicate",
+            "Vulnerable to SYN flood attacks if not protected",
+            "Takes one round-trip time (RTT) to complete"
+          ],
+          codeExample: `# Analyze TCP handshake with tcpdump
+tcpdump -i eth0 'tcp[tcpflags] & (tcp-syn|tcp-ack) != 0'
+
+# Output shows:
+# Client: SYN, seq 1000
+# Server: SYN-ACK, seq 2000, ack 1001  
+# Client: ACK, ack 2001
+
+# Monitor TCP connections
+netstat -tan | grep ESTABLISHED`
+        },
+        {
+          title: "Protocol Comparison: When to Use Each",
+          content: "Choosing between TCP and UDP depends on your application's priorities. Use TCP when data integrity is critical - financial transactions, file downloads, web pages, emails, or any scenario where losing data is unacceptable. Use UDP when speed and low latency matter most - live video streaming, online gaming, VoIP calls, DNS lookups, or real-time sensor data where occasional losses are tolerable. Modern protocols like QUIC (used in HTTP/3) combine UDP's speed with TCP-like reliability at the application layer, offering the best of both worlds.",
+          keyPoints: [
+            "TCP: Financial apps, file transfers, web, email, databases",
+            "UDP: Streaming, gaming, VoIP, DNS, DHCP, broadcast",
+            "TCP adds 20+ bytes overhead per packet",
+            "UDP adds only 8 bytes overhead per packet",
+            "TCP requires 3-way handshake (adds latency)",
+            "UDP starts transmitting immediately (lower latency)",
+            "QUIC (HTTP/3): UDP with application-layer reliability"
+          ],
+          codeExample: `// Performance Comparison
+// TCP: Higher overhead, guaranteed delivery
+// - Header: 20 bytes minimum
+// - Handshake: 1 RTT before data transfer
+// - Acknowledgments: Frequent packets
+// - Best for: Accuracy over speed
+
+// UDP: Lower overhead, best-effort delivery
+// - Header: 8 bytes
+// - No handshake: Immediate data transfer
+// - No acknowledgments: Unidirectional
+// - Best for: Speed over accuracy
+
+// Real-world example: Video streaming
+// TCP: Buffering when packets delayed
+// UDP: Occasional glitches, no buffering`
+        },
+        {
+          title: "Security Considerations",
+          content: "Both TCP and UDP have security implications. TCP's connection-oriented nature makes it vulnerable to SYN flood attacks, where attackers send many SYN packets without completing the handshake, exhausting server resources. TCP sequence number prediction can lead to session hijacking. UDP's connectionless nature makes it easier to spoof source addresses, enabling amplification attacks like DNS amplification. UDP also lacks built-in encryption, though this can be added at higher layers (DTLS for UDP is analogous to TLS for TCP). Modern security often relies on application-layer encryption (TLS/DTLS) rather than transport-layer security.",
+          keyPoints: [
+            "TCP SYN flood: Exhaust server connection table",
+            "TCP hijacking: Predict sequence numbers to inject data",
+            "UDP spoofing: Easy to fake source IP address",
+            "UDP amplification: Small query → large response attack",
+            "Neither protocol provides encryption by default",
+            "TLS secures TCP connections (HTTPS, FTPS)",
+            "DTLS secures UDP connections (VoIP, QUIC)",
+            "Application-layer encryption is recommended for both"
+          ],
+          codeExample: `// TCP SYN Flood Protection
+// Enable SYN cookies (Linux)
+sysctl -w net.ipv4.tcp_syncookies=1
+
+// Increase SYN backlog
+sysctl -w net.ipv4.tcp_max_syn_backlog=4096
+
+// UDP Rate Limiting (iptables)
+iptables -A INPUT -p udp -m limit --limit 50/s -j ACCEPT
+iptables -A INPUT -p udp -j DROP
+
+// Monitor attack indicators
+netstat -an | grep SYN_RECV | wc -l`
+        }
+      ],
+      practicalExercise: {
+        title: "Compare TCP and UDP in Action",
+        scenario: "Set up both TCP and UDP servers and observe the differences in behavior, especially under packet loss conditions.",
+        steps: [
+          "Install Wireshark for packet analysis",
+          "Run the TCP server example and connect a client",
+          "Observe the three-way handshake in Wireshark",
+          "Run the UDP server example and send datagrams",
+          "Notice the absence of handshake in UDP traffic",
+          "Use 'tc' (traffic control) to simulate 10% packet loss",
+          "Observe TCP automatically retransmitting lost packets",
+          "Observe UDP does not detect or retransmit lost packets"
+        ]
+      },
+      realWorldExample: {
+        title: "Netflix Streaming: From TCP to UDP (QUIC)",
+        description: "Netflix originally used TCP for video streaming, which caused buffering when packets were delayed or lost (TCP's head-of-line blocking). Modern Netflix uses QUIC protocol (built on UDP) which provides reliability without head-of-line blocking. If one video chunk is lost, other chunks can still be delivered and displayed, resulting in smoother playback with less buffering.",
+        impact: "By switching to UDP-based protocols, Netflix reduced buffering events by 35% and improved video startup time by 15%. This demonstrates how choosing the right transport protocol dramatically impacts user experience in real-time applications."
+      }
+    },
+    quiz: [
+      {
+        id: 7,
+        question: "Why does video streaming typically use UDP instead of TCP?",
+        options: [
+          "UDP provides better video quality",
+          "TCP's retransmission causes buffering delays that are worse than occasional frame drops",
+          "UDP automatically compresses video data",
+          "TCP cannot handle video data formats"
+        ],
+        correctAnswer: 1,
+        explanation: "Video streaming uses UDP because TCP's automatic retransmission of lost packets causes delays (buffering). For live video, it's better to skip a lost frame and continue playing than to pause and wait for retransmission. UDP allows this graceful degradation.",
+        difficulty: 'medium'
+      },
+      {
+        id: 8,
+        question: "What is the main vulnerability of TCP's three-way handshake?",
+        options: [
+          "It's too slow for modern networks",
+          "SYN flood attacks can exhaust server resources",
+          "It requires too much bandwidth",
+          "It cannot work with IPv6"
+        ],
+        correctAnswer: 1,
+        explanation: "TCP's three-way handshake is vulnerable to SYN flood attacks where attackers send many SYN packets without completing the handshake. The server allocates resources for each half-open connection, which can exhaust memory and prevent legitimate connections. SYN cookies are a common mitigation.",
+        difficulty: 'hard'
+      },
+      {
+        id: 9,
+        question: "Which protocol would be best for a financial trading application that requires guaranteed order of transactions?",
+        options: [
+          "UDP for speed",
+          "TCP for reliability and ordering",
+          "Either protocol works equally well",
+          "HTTP only"
+        ],
+        correctAnswer: 1,
+        explanation: "Financial trading applications must use TCP because it guarantees that transactions arrive in order and without loss. The slight latency increase from TCP's reliability mechanisms is acceptable compared to the risk of lost or out-of-order financial transactions.",
+        difficulty: 'easy'
+      }
+    ],
+    knowledgePoints: [
+      {
+        title: "Protocol Master",
+        description: "You understand when to use TCP vs UDP for optimal performance!",
+        icon: "network"
+      },
+      {
+        title: "Transport Expert",
+        description: "You've mastered the transport layer and can design efficient communication systems!",
+        icon: "speed"
+      }
+    ]
+  },
 
   {
     id: 11,

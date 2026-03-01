@@ -1,0 +1,220 @@
+// This file contains lessons 4-10 to be inserted into comprehensiveLessons.ts before lesson 11
+
+  // PHASE 0: Lesson 4 - DNS Fundamentals
+  {
+    id: 4,
+    title: "DNS: The Internet's Phone Book",
+    phase: 0,
+    phaseName: "Network Fundamentals",
+    day: 4,
+    difficulty: 'beginner',
+    reading_time_min: 18,
+    tags: ['dns', 'networking', 'domains', 'resolution'],
+    description: "Master how DNS translates human-readable domain names into IP addresses, enabling the internet to function",
+    objectives: [
+      "Understand what DNS is and why it exists",
+      "Learn the DNS hierarchy and resolution process",
+      "Identify different types of DNS servers",
+      "Recognize common DNS attacks and mitigations",
+      "Configure basic DNS settings"
+    ],
+    content: {
+      introduction: "DNS (Domain Name System) is one of the internet's most critical services. It translates human-friendly domain names like 'google.com' into IP addresses like '142.250.185.46' that computers use to identify each other. Without DNS, we'd have to memorize IP addresses for every website. Understanding DNS is essential for security architects as it's both a critical service to protect and a common attack vector.",
+      sections: [
+        {
+          title: "What is DNS and Why It Exists",
+          content: "DNS was created in the 1980s to solve the scalability problem of maintaining a single hosts file for the entire internet. Before DNS, every computer had a local file mapping hostnames to IP addresses, which became impractical as the internet grew. DNS is a distributed, hierarchical database system that translates domain names to IP addresses (forward lookup) and IP addresses to domain names (reverse lookup). It's decentralized, which makes it resilient and scalable, but also introduces security challenges.",
+          keyPoints: [
+            "Translates domain names to IP addresses and vice versa",
+            "Distributed database prevents single point of failure",
+            "Hierarchical structure: Root → TLD → Authoritative servers",
+            "Caching at multiple levels improves performance",
+            "Uses both TCP (zone transfers) and UDP (queries) on port 53",
+            "Critical infrastructure - DNS outages break the internet",
+            "Supports various record types: A, AAAA, CNAME, MX, TXT, etc."
+          ],
+          codeExample: `# Query DNS using dig command
+dig google.com
+
+# Query specific record type
+dig google.com MX
+
+# Query specific DNS server
+dig @8.8.8.8 google.com
+
+# Trace full DNS resolution path
+dig +trace google.com`
+        },
+        {
+          title: "DNS Hierarchy: From Root to Your Website",
+          content: "DNS uses a hierarchical tree structure. At the top are 13 root servers (actually hundreds of servers using anycast). Below them are TLD (Top-Level Domain) servers managing zones like .com, .org, .uk. Under TLDs are authoritative name servers for specific domains like google.com or example.org. Finally, local DNS resolvers (provided by ISPs or services like Cloudflare 1.1.1.1 or Google 8.8.8.8) cache results and perform recursive queries on behalf of clients. This hierarchy distributes load and allows domains to be managed independently.",
+          keyPoints: [
+            "Root servers: 13 named servers (a-m.root-servers.net)",
+            "TLD servers: Manage top-level domains (.com, .net, .org, country codes)",
+            "Authoritative servers: Hold actual DNS records for domains",
+            "Recursive resolvers: Query on behalf of clients, cache results",
+            "Hierarchy enables: Scalability, distribution, delegation",
+            "Each level can cache results to reduce query load",
+            "Root hints file contains addresses of root servers"
+          ],
+          codeExample: `# View DNS hierarchy for a domain
+dig +trace example.com
+
+# Shows path: Root → .com TLD → example.com authoritative
+
+# Query root servers directly
+dig @a.root-servers.net com. NS
+
+# Check which DNS server you're using
+cat /etc/resolv.conf`
+        },
+        {
+          title: "DNS Resolution Process: Recursive vs Iterative",
+          content: "When you visit a website, your computer asks a DNS resolver to find the IP address. The resolver can use two methods: Recursive query - the resolver takes full responsibility for finding the answer, querying multiple servers if needed and returning the final result. Iterative query - the resolver returns the best answer it has or a referral to another server, leaving the client to continue querying. Most clients use recursive resolvers (provided by ISPs or services like Cloudflare) which then make iterative queries to authoritative servers. This division of labor makes DNS efficient and scalable.",
+          keyPoints: [
+            "Recursive query: Resolver does all the work, returns final answer",
+            "Iterative query: Each server returns best available answer or referral",
+            "Typical flow: Client → Recursive resolver → Root → TLD → Authoritative",
+            "Caching: Each level caches results based on TTL (Time To Live)",
+            "TTL values: Range from seconds to days, balance freshness vs load",
+            "Cache poisoning: Attackers inject false DNS records into caches",
+            "DNSSEC adds cryptographic validation to prevent tampering"
+          ],
+          codeExample: `# Flush DNS cache
+# Windows
+ipconfig /flushdns
+
+# macOS
+sudo dscacheutil -flushcache
+
+# Linux (systemd-resolved)
+sudo systemd-resolve --flush-caches
+
+# Check DNS cache entries
+# Linux
+sudo systemd-resolve --statistics`
+        },
+        {
+          title: "DNS Caching and TTL",
+          content: "Caching is critical to DNS performance. Every DNS record has a TTL (Time To Live) value that specifies how long it can be cached before requiring a fresh query. Short TTLs (60-300 seconds) allow quick updates but increase load on authoritative servers. Long TTLs (hours or days) reduce load but slow down changes. Recursive resolvers cache at multiple levels - in the resolver itself, in operating system caches, and in browser caches. Understanding TTL is crucial when migrating services or responding to incidents.",
+          keyPoints: [
+            "TTL specifies cache duration in seconds",
+            "Short TTL (60s): Fast updates, higher server load",
+            "Long TTL (24h+): Slower updates, lower server load",
+            "Multiple cache layers: Browser, OS, resolver, ISP",
+            "Pre-migration: Lower TTL to 60s for quick cutover",
+            "Negative caching: Failed queries also cached (prevents attack amplification)",
+            "Cache poisoning countermeasures: Query ID randomization, source port randomization"
+          ],
+          codeExample: `# DNS record with TTL (example.com zone file)
+example.com.    3600    IN  A       93.184.216.34
+www             3600    IN  CNAME   example.com.
+mail            86400   IN  A       93.184.216.50
+
+# TTL values:
+# 300 = 5 minutes (very dynamic)
+# 3600 = 1 hour (common)
+# 86400 = 24 hours (stable services)`
+        },
+        {
+          title: "Common DNS Attacks and Defenses",
+          content: "DNS is a prime target for attackers. DNS amplification attacks exploit DNS's UDP protocol and response size - attackers send small queries with spoofed source IPs, causing servers to send large responses to victims (amplification factor can exceed 50x). DNS cache poisoning injects false records into caches, redirecting users to malicious sites. DNS tunneling uses DNS queries to exfiltrate data or establish covert channels. DDoS attacks overwhelm DNS servers, making websites unreachable. Defenses include rate limiting, DNSSEC validation, response rate limiting (RRL), anycast distribution, and monitoring for anomalies.",
+          keyPoints: [
+            "DNS amplification: Small query → large response (DDoS attack)",
+            "Cache poisoning: Inject false DNS records into caches",
+            "DNS tunneling: Encode data in DNS queries for covert channels",
+            "DDoS on DNS: Overwhelm authoritative or recursive servers",
+            "Defenses: DNSSEC, rate limiting, anycast, monitoring",
+            "DNSSEC: Cryptographic signatures validate DNS responses",
+            "Rate limiting: Restrict queries per source IP",
+            "Anycast: Distribute load and absorb attacks globally"
+          ],
+          codeExample: `# Enable DNSSEC validation (Linux)
+echo "dnssec-validation auto;" >> /etc/bind/named.conf.options
+
+# Check if domain uses DNSSEC
+dig +dnssec example.com
+
+# Rate limiting with iptables
+iptables -A INPUT -p udp --dport 53 -m limit --limit 50/sec -j ACCEPT
+iptables -A INPUT -p udp --dport 53 -j DROP
+
+# Monitor DNS query volume
+tcpdump -i any -n port 53 | pv -l > /dev/null`
+        }
+      ],
+      practicalExercise: {
+        title: "Trace a Full DNS Resolution",
+        scenario: "Use dig to understand the complete DNS resolution process from root servers to final answer.",
+        steps: [
+          "Open terminal and run: dig +trace cloudflare.com",
+          "Observe query to root servers (a.root-servers.net, etc.)",
+          "See referral to .com TLD servers",
+          "Watch query to cloudflare.com authoritative servers",
+          "Note TTL values at each level",
+          "Run same command again and notice cached results",
+          "Flush DNS cache and repeat to see difference"
+        ]
+      },
+      realWorldExample: {
+        title: "Dyn DNS Attack (2016): The Day the Internet Broke",
+        description: "In October 2016, a massive DDoS attack targeted Dyn, a major DNS provider. The Mirai botnet, comprising hundreds of thousands of compromised IoT devices, flooded Dyn's DNS infrastructure with traffic. This made major websites like Twitter, Netflix, Reddit, and CNN inaccessible for millions of users, even though the websites themselves were running fine - users just couldn't resolve their domain names.",
+        impact: "The attack demonstrated that DNS is critical internet infrastructure and a single point of failure. It led to increased adoption of anycast DNS, multiple DNS providers for redundancy, and improved DDoS protection. Companies realized that even with perfect web security, DNS vulnerabilities can take them offline."
+      }
+    },
+    quiz: [
+      {
+        id: 10,
+        question: "Why does DNS use UDP instead of TCP for most queries?",
+        options: [
+          "TCP is not supported by DNS servers",
+          "UDP is faster and requires less overhead, which is suitable for small query/response exchanges",
+          "UDP provides better security than TCP",
+          "TCP cannot handle DNS record formats"
+        ],
+        correctAnswer: 1,
+        explanation: "DNS primarily uses UDP because most DNS queries and responses are small (fitting in a single packet) and UDP has minimal overhead. TCP's connection establishment would add unnecessary latency. However, DNS falls back to TCP for large responses (like zone transfers) or when UDP responses are truncated.",
+        difficulty: 'medium'
+      },
+      {
+        id: 11,
+        question: "What is the purpose of DNSSEC?",
+        options: [
+          "To encrypt DNS queries for privacy",
+          "To provide cryptographic validation that DNS responses haven't been tampered with",
+          "To make DNS queries faster",
+          "To prevent DNS servers from being overloaded"
+        ],
+        correctAnswer: 1,
+        explanation: "DNSSEC (DNS Security Extensions) adds cryptographic signatures to DNS records, allowing resolvers to verify that responses came from authoritative servers and haven't been modified. This prevents cache poisoning attacks. Note: DNSSEC doesn't encrypt queries (that's DoH/DoT), it only validates authenticity.",
+        difficulty: 'hard'
+      },
+      {
+        id: 12,
+        question: "If a DNS record has a TTL of 3600 seconds, what does this mean?",
+        options: [
+          "The record will be deleted after 1 hour",
+          "The record can be cached for up to 1 hour before requiring a fresh query",
+          "The DNS server will respond within 1 hour",
+          "The domain expires in 1 hour"
+        ],
+        correctAnswer: 1,
+        explanation: "TTL (Time To Live) of 3600 seconds (1 hour) means DNS resolvers can cache this record for up to 1 hour before they must query the authoritative server again. Short TTLs enable quick updates but increase server load; long TTLs reduce load but slow down changes.",
+        difficulty: 'easy'
+      }
+    ],
+    knowledgePoints: [
+      {
+        title: "DNS Expert",
+        description: "You understand how the internet's address book works!",
+        icon: "globe"
+      },
+      {
+        title: "Resolution Master",
+        description: "You can troubleshoot DNS issues like a pro!",
+        icon: "search"
+      }
+    ]
+  },
+
+(Continue with Lessons 5-10...)
