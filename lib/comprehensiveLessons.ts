@@ -70,14 +70,16 @@ export const comprehensiveLessons: Lesson[] = [
       sections: [
         {
           title: "Layer 7: Application Layer",
-          content: "The Application Layer is where users interact with network services. This layer includes HTTP, HTTPS, DNS, SMTP, and other protocols that applications use to communicate.",
+          content: "The Application Layer is where users interact with network services. This layer includes HTTP, HTTPS, DNS, SMTP, FTP, SSH, and other protocols that applications use to communicate. It provides network services directly to end-user applications and is closest to the end user. This layer handles authentication, privacy, and quality of service constraints.",
           diagram: "osi-layer-7",
           keyPoints: [
             "HTTP/HTTPS protocols operate here",
             "WAF (Web Application Firewall) protects at this layer",
-            "Common attacks: SQL injection, XSS, CSRF",
+            "Common attacks: SQL injection, XSS, CSRF, command injection",
             "CDN caches content at this layer",
-            "DDoS attacks often target Layer 7"
+            "DDoS attacks often target Layer 7",
+            "Application-level encryption (TLS/SSL) starts here",
+            "API gateways and load balancers can operate at this layer"
           ],
           codeExample: `// Layer 7 Security Headers
 app.use((req, res, next) => {
@@ -85,35 +87,164 @@ app.use((req, res, next) => {
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Strict-Transport-Security', 'max-age=31536000');
+  res.setHeader('Content-Security-Policy', "default-src 'self'");
   next();
 });`
         },
         {
+          title: "Layer 6: Presentation Layer",
+          content: "The Presentation Layer translates data between the application layer and the network format. It handles data encoding, encryption, compression, and format conversion. This layer ensures that data sent from one system can be read by another, regardless of the format differences. It acts as a data translator for the network, converting data formats like JPEG, GIF, MPEG, ASCII, and EBCDIC.",
+          diagram: "osi-layer-6",
+          keyPoints: [
+            "Data encryption and decryption happen here",
+            "Handles data compression and decompression",
+            "Character set translation (ASCII, Unicode, EBCDIC)",
+            "SSL/TLS encryption operates at this layer",
+            "Image and video format conversion (JPEG, PNG, MPEG)",
+            "MIME encoding for email attachments",
+            "Data serialization and deserialization"
+          ],
+          codeExample: `// TLS/SSL Configuration (Layer 6)
+const https = require('https');
+const fs = require('fs');
+
+const options = {
+  key: fs.readFileSync('private-key.pem'),
+  cert: fs.readFileSync('certificate.pem'),
+  ciphers: 'HIGH:!aNULL:!MD5',
+  minVersion: 'TLSv1.2'
+};
+
+https.createServer(options, app).listen(443);`
+        },
+        {
+          title: "Layer 5: Session Layer",
+          content: "The Session Layer manages sessions between applications. It establishes, maintains, and terminates connections (sessions) between local and remote applications. This layer handles session checkpointing and recovery, allowing applications to resume from where they left off if a connection is interrupted. It also manages authentication and authorization for network sessions.",
+          diagram: "osi-layer-5",
+          keyPoints: [
+            "Establishes, maintains, and terminates sessions",
+            "Session authentication and authorization",
+            "Session checkpointing and recovery",
+            "Manages dialog control (half-duplex or full-duplex)",
+            "Token management for preventing simultaneous access",
+            "RPC (Remote Procedure Call) operates here",
+            "NetBIOS and PPTP protocols use this layer"
+          ],
+          codeExample: `// Session Management Example
+const session = require('express-session');
+
+app.use(session({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { 
+    secure: true, 
+    maxAge: 3600000, // 1 hour
+    httpOnly: true,
+    sameSite: 'strict'
+  },
+  rolling: true // Extend session on activity
+}));`
+        },
+        {
           title: "Layer 4: Transport Layer",
-          content: "The Transport Layer handles end-to-end communication using TCP and UDP protocols. This layer ensures reliable data delivery and manages connection states.",
+          content: "The Transport Layer provides end-to-end communication services for applications. It handles segmentation, flow control, error correction, and ensures data integrity. The two main protocols are TCP (Transmission Control Protocol) for reliable, connection-oriented communication and UDP (User Datagram Protocol) for fast, connectionless transmission. This layer manages port numbers to identify applications and provides multiplexing capabilities.",
           diagram: "osi-layer-4",
           keyPoints: [
-            "TCP provides reliable, connection-oriented communication",
-            "UDP offers fast, connectionless transmission",
+            "TCP provides reliable, connection-oriented communication with flow control",
+            "UDP offers fast, connectionless transmission for real-time applications",
+            "Port numbers identify applications (0-65535)",
             "SYN flood attacks target TCP handshake",
             "Port scanning occurs at this layer",
-            "Load balancers operate at Layer 4"
+            "Load balancers can operate at Layer 4",
+            "Handles segmentation and reassembly of data",
+            "Provides error detection and correction"
           ],
           codeExample: `# TCP SYN Flood Protection
 iptables -A INPUT -p tcp --syn -m limit --limit 1/s --limit-burst 3 -j ACCEPT
-iptables -A INPUT -p tcp --syn -j DROP`
+iptables -A INPUT -p tcp --syn -j DROP
+
+# TCP Connection States
+netstat -tan | awk '{print $6}' | sort | uniq -c`
         },
         {
           title: "Layer 3: Network Layer",
-          content: "The Network Layer is responsible for routing packets across networks using IP addresses. This is where CDNs distribute content globally.",
+          content: "The Network Layer is responsible for packet forwarding, routing, and addressing across multiple networks. It determines the best path for data to travel from source to destination using logical addressing (IP addresses). This layer handles fragmentation and reassembly of packets, manages routing tables, and implements protocols like IP (Internet Protocol), ICMP (Internet Control Message Protocol), and routing protocols (BGP, OSPF, RIP).",
           diagram: "osi-layer-3",
           keyPoints: [
-            "IP addressing and routing happen here",
-            "DDoS attacks can target this layer",
+            "IP addressing and routing happen here (IPv4 and IPv6)",
+            "Determines the best path using routing algorithms",
+            "Packet fragmentation and reassembly",
+            "DDoS attacks can target this layer with packet floods",
             "BGP hijacking is a Layer 3 threat",
-            "Geo-blocking operates at this layer",
-            "CDN edge servers use Anycast routing"
-          ]
+            "Geo-blocking and IP filtering operate at this layer",
+            "CDN edge servers use Anycast routing",
+            "ICMP for ping and traceroute diagnostics"
+          ],
+          codeExample: `# IP Routing and Filtering
+# Block specific IP ranges
+iptables -A INPUT -s 192.168.1.0/24 -j DROP
+
+# Enable IP forwarding
+sysctl -w net.ipv4.ip_forward=1
+
+# View routing table
+ip route show`
+        },
+        {
+          title: "Layer 2: Data Link Layer",
+          content: "The Data Link Layer provides node-to-node data transfer between two directly connected nodes. It detects and possibly corrects errors that may occur in the Physical layer. This layer is divided into two sublayers: MAC (Media Access Control) which controls how devices gain access to the medium and permission to transmit data, and LLC (Logical Link Control) which provides flow control and error checking. Switches operate at this layer using MAC addresses.",
+          diagram: "osi-layer-2",
+          keyPoints: [
+            "Uses MAC addresses (48-bit hardware addresses) for identification",
+            "Frames data packets with headers and trailers",
+            "Error detection using CRC (Cyclic Redundancy Check)",
+            "Flow control between directly connected nodes",
+            "Switches and bridges operate at this layer",
+            "VLANs (Virtual LANs) are configured at Layer 2",
+            "ARP (Address Resolution Protocol) maps IP to MAC addresses",
+            "Common attacks: ARP spoofing, MAC flooding, VLAN hopping"
+          ],
+          codeExample: `# Layer 2 Security
+# View MAC address table
+arp -a
+
+# Enable port security on switch (Cisco)
+interface GigabitEthernet0/1
+ switchport mode access
+ switchport port-security
+ switchport port-security maximum 2
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky`
+        },
+        {
+          title: "Layer 1: Physical Layer",
+          content: "The Physical Layer defines the hardware elements involved in data transmission, including cables, switches, network interface cards, and the electrical signals or light pulses that represent bits. It specifies the physical and electrical specifications of the data connection, including voltage levels, timing, data rates, maximum transmission distances, and physical connectors. This layer converts digital bits into electrical, radio, or optical signals.",
+          diagram: "osi-layer-1",
+          keyPoints: [
+            "Defines physical medium: copper, fiber optic, wireless",
+            "Specifies voltage levels and signal timing",
+            "Determines data transmission rates (bandwidth)",
+            "Defines physical connectors (RJ45, fiber connectors)",
+            "Hub and repeater devices operate at this layer",
+            "Handles bit synchronization between devices",
+            "Physical security is critical at this layer",
+            "Attacks: cable cutting, eavesdropping, physical tampering"
+          ],
+          codeExample: `# Physical Layer Diagnostics
+# Check network interface status
+ethtool eth0
+
+# View physical link status
+ip link show
+
+# Monitor physical errors
+netstat -i
+
+# Cable testing (requires physical access)
+# - Check for proper termination
+# - Verify cable category (Cat5e, Cat6, etc.)
+# - Test signal strength and attenuation`
         }
       ],
       practicalExercise: {
