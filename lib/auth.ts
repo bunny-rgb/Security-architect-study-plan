@@ -3,6 +3,10 @@ export interface User {
   id: string
   name: string
   email?: string
+  bio?: string
+  location?: string
+  company?: string
+  website?: string
   createdAt: string
   lastActive: string
   preferences: {
